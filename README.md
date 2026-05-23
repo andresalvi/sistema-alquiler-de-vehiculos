@@ -30,3 +30,21 @@ El desarrollo se divide en dos fases:
 - Módulos estándar: json, datetime, os, typing
 - PSeInt (para la Fase 1, opcional)
 - Git para control de versiones
+
+LOGICAPROYECTOALQUILER/
+├── .venv/ # Entorno virtual de Python
+├── pseint/ # Pseudocódigo de la Fase 1
+│ └── SistemaAlquilerVehiculos_Fase1.psc
+├── tests/ # Pruebas unitarias (futura Fase 3)
+├── cli.py # Interfaz de línea de comandos (punto de entrada)
+├── colors.py # (opcional) Colores para la terminal
+├── config.py # Constantes (rutas, formato de fecha)
+├── db.py # Persistencia (carga y guardado JSON)
+├── models.py # Definición de constantes de estado
+├── service.py # Lógica de negocio pura
+├── repository.py # (opcional) Acceso a datos
+├── requirements.txt # Dependencias (actualmente vacío)
+├── .gitignore # Archivos ignorados por Git
+└── README.md #
+-----------------+
+## Instalación y ejecución
