@@ -1,0 +1,32 @@
+{
+    "ABC123": {
+        "marca": "Toyota",
+        "modelo": "Corolla",
+        "tipo": "Sedán",
+        "estado": "Disponible"
+    },
+    "DEF456": {
+        "marca": "Honda",
+        "modelo": "Civic",
+        "tipo": "Sedán",
+        "estado": "Disponible"
+    },
+    "GHI789": {
+        "marca": "Chevrolet",
+        "modelo": "Spark",
+        "tipo": "Hatchback",
+        "estado": "En Mantenimiento"
+    },
+    "JKL012": {
+        "marca": "Nissan",
+        "modelo": "X-Trail",
+        "tipo": "SUV",
+        "estado": "Disponible"
+    },
+    "MNO345": {
+        "marca": "Ford",
+        "modelo": "Fiesta",
+        "tipo": "Hatchback",
+        "estado": "Alquilado"
+    }
+}
