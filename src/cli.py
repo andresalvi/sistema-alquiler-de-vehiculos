@@ -10,11 +10,21 @@ import os
 # Truco de entorno: Añadir el directorio raíz al path de Python si se arranca desde src/
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from src.clientes import (
+    inicializar_clientes,
+    registrar_cliente,
+    buscar_,cliente,
+    editar_cliente,
+    listar_clientes,
+    eliminar_cliente
+)
 from src.config import ARCHIVO_VEHICULOS, ARCHIVO_RESERVAS
 from src.repository import cargar_datos, guardar_datos
 from src.models import ESTADO_DISPONIBLE, ESTADO_ALQUILADO, ESTADO_MANTENIMIENTO
 from src.colors import pintar_exito, pintar_error, pintar_alerta, pintar_info
 import src.service as service
+
+
 
 def ejecutar_listar_vehiculos(vehiculos: dict) -> None:
     print(pintar_info("\n--- LISTADO GENERAL DE FLOTA ---"))
@@ -89,6 +99,7 @@ def ejecutar_historial(reservas: list) -> None:
 
 def menu_principal():
     """Lazo de control cerrado (*Event Loop*) de la CLI."""
+    clientes = inicializar_clientes()
     vehiculos_raw = cargar_datos(ARCHIVO_VEHICULOS, "vehiculos")
     reservas_raw = cargar_datos(ARCHIVO_RESERVAS, "reservas")
     
