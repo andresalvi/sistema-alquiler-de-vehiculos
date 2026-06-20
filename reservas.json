@@ -1,1 +1,9 @@
-[]
+[
+    {
+        "cliente": "GERARDO ANDRES",
+        "placa": "ADC987",
+        "fecha_inicio": "2026-06-21",
+        "fecha_fin": "2026-07-21",
+        "fecha_reserva": "2026-06-20"
+    }
+]

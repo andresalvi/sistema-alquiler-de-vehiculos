@@ -28,5 +28,11 @@
         "modelo": "Fiesta",
         "tipo": "Hatchback",
         "estado": "Alquilado"
+    },
+    "ADC987": {
+        "marca": "Tesla",
+        "modelo": "X",
+        "tipo": "sedan",
+        "estado": "Disponible"
     }
 }
