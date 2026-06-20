@@ -62,11 +62,15 @@ def verificar_disponibilidad(vehiculo_placa: str, inicio: datetime, fin: datetim
                 return False
     return True
 
-def procesar_reserva(cliente: str, placa: str, f_ini: str, f_fin: str, vehiculos: Dict, reservas: List) -> Tuple[bool, str]:
+def procesar_reserva(dui_cliente: str, placa: str, f_ini: str, f_fin: str, vehiculos: Dict, reservas: List, clientes: Dict) -> Tuple[bool, str]:
     """
-    Procesa de manera atómica la logica pura de la reserva sin intervención directa de inputs de consola.
+    Procesa de manera atómica la lógica pura de la reserva sin intervención directa de inputs de consola.
     Retorna una tupla (EstadoBooleano de éxito, MensajeDescriptivo).
     """
+    # Cláusula de guarda: Validar existencia del cliente
+    if dui_cliente not in clientes:
+        return False, f"El DUI '{dui_cliente}' no pertenece a ningún cliente registrado."
+
     if placa not in vehiculos:
         return False, f"La placa {placa} no se encuentra dada de alta en el sistema."
 
@@ -83,7 +87,8 @@ def procesar_reserva(cliente: str, placa: str, f_ini: str, f_fin: str, vehiculos
 
     # Bloque transaccional simulado sobre estructuras de memoria internas
     nueva_reserva = {
-        "cliente": cliente,
+        "cliente": clientes[dui_cliente]["nombre"],
+        "dui_cliente": dui_cliente,
         "placa": placa,
         "fecha_inicio": f_ini,
         "fecha_fin": f_fin,

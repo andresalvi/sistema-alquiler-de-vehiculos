@@ -1,128 +1,91 @@
+# clientes.py
 """
-Gestión de clientes y persistencia.
+Capa de Dominio y Gestión de Clientes.
+Administra el ciclo CRUD completo para las identidades del sistema.
 """
 
 from typing import Dict, Tuple, Optional
-
 from src.config import ARCHIVO_CLIENTES
 from src.repository import cargar_datos, guardar_datos
-
+from src.models import LONGITUD_DUI  # Importamos la constante 
 
 def inicializar_clientes() -> dict:
-    """
-    Carga los clientes desde disco.
-    Si el archivo está vacío, retorna un diccionario vacío.
-    """
+    """Carga los clientes desde disco. Inicializa un diccionario vacío en caso de ausencia."""
     clientes = cargar_datos(ARCHIVO_CLIENTES, "clientes")
-
     if not isinstance(clientes, dict):
         clientes = {}
         guardar_datos(ARCHIVO_CLIENTES, clientes)
-
     return clientes
 
+def registrar_cliente(dui: str, nombre: str, telefono: str, correo: str, clientes: dict) -> Tuple[bool, str]:
+    """Valida la estructura del DUI e inscribe un nuevo perfil de cliente."""
+    dui_limpio = dui.strip().replace("-", "")  # Remueve espacios y guiones para validar pureza numérica
 
-def registrar_cliente(
-        dui: str,
-        nombre: str,
-        telefono: str,
-        correo: str,
-        clientes: dict
-) -> Tuple[bool, str]:
-    """
-    Registra un cliente nuevo.
-    """
+    if not dui_limpio:
+        return False, "Debe ingresar un documento de identidad (DUI) válido."
+    
+    # Validación estricta usando la constante de models.py
+    if len(dui_limpio) != LONGITUD_DUI or not dui_limpio.isdigit():
+        return False, f"El DUI debe contener exactamente {LONGITUD_DUI} dígitos numéricos."
 
-    dui = dui.strip()
+    # Guardamos con el formato estándar original con guion para la visualización (Ej: 00000000-0)
+    dui_formateado = f"{dui_limpio[:8]}-{dui_limpio[8:]}"
 
-    if not dui:
-        return False, "Debe ingresar un DUI."
+    if dui_formateado in clientes:
+        return False, "Ya existe un cliente registrado con ese número de DUI."
 
-    if dui in clientes:
-        return False, "Ya existe un cliente con ese DUI."
-
-    clientes[dui] = {
+    clientes[dui_formateado] = {
         "nombre": nombre.strip(),
         "telefono": telefono.strip(),
         "correo": correo.strip()
     }
-
     guardar_datos(ARCHIVO_CLIENTES, clientes)
+    return True, "Cliente registrado correctamente en el sistema."
 
-    return True, "Cliente registrado correctamente."
+def buscar_cliente(dui: str, clientes: dict) -> Optional[dict]:
+    """Recupera los atributos de un cliente manejando variaciones con o sin guion."""
+    dui_limpio = dui.strip().replace("-", "")
+    if len(dui_limpio) == 9:
+        dui = f"{dui_limpio[:8]}-{dui_limpio[8:]}"
+    return clientes.get(dui)
 
+def editar_cliente(dui: str, nombre: str, telefono: str, correo: str, clientes: dict) -> Tuple[bool, str]:
+    """Modifica de forma segura los campos específicos de un cliente."""
+    dui_limpio = dui.strip().replace("-", "")
+    dui_formateado = f"{dui_limpio[:8]}-{dui_limpio[8:]}" if len(dui_limpio) == 9 else dui.strip()
 
-def buscar_cliente(
-        dui: str,
-        clientes: dict
-) -> Optional[dict]:
-    """
-    Busca un cliente por DUI.
-    """
+    if dui_formateado not in clientes:
+        return False, "El cliente solicitado no existe."
 
-    return clientes.get(dui.strip())
-
-
-def editar_cliente(
-        dui: str,
-        nombre: str,
-        telefono: str,
-        correo: str,
-        clientes: dict
-) -> Tuple[bool, str]:
-
-    if dui not in clientes:
-        return False, "Cliente inexistente."
-
-    clientes[dui]["nombre"] = nombre.strip()
-    clientes[dui]["telefono"] = telefono.strip()
-    clientes[dui]["correo"] = correo.strip()
-
+    clientes[dui_formateado]["nombre"] = nombre.strip()
+    clientes[dui_formateado]["telefono"] = telefono.strip()
+    clientes[dui_formateado]["correo"] = correo.strip()
+    
     guardar_datos(ARCHIVO_CLIENTES, clientes)
+    return True, "Información del cliente actualizada correctamente."
 
-    return True, "Cliente actualizado correctamente."
-
-
-def listar_clientes(
-        clientes: dict
-) -> None:
-
+def listar_clientes(clientes: dict) -> None:
+    """Muestra en consola de forma estructurada el total de clientes cargados."""
     if not clientes:
         print("No existen clientes registrados.")
         return
-
     for dui, datos in clientes.items():
-        print(
-            f"DUI: {dui} | "
-            f"Nombre: {datos['nombre']} | "
-            f"Teléfono: {datos['telefono']} | "
-            f"Correo: {datos['correo']}"
-        )
+        print(f"👤 DUI: {dui} | Nombre: {datos['nombre']} | Tel: {datos['telefono']} | Correo: {datos['correo']}")
 
+def eliminar_cliente(dui: str, clientes: dict, reservas: list) -> Tuple[bool, str]:
+    """Remueve una entidad del sistema aplicando reglas de integridad referencial con reservas."""
+    dui_limpio = dui.strip().replace("-", "")
+    dui_formateado = f"{dui_limpio[:8]}-{dui_limpio[8:]}" if len(dui_limpio) == 9 else dui.strip()
 
-def eliminar_cliente(
-        dui: str,
-        clientes: dict,
-        reservas: list
-) -> Tuple[bool, str]:
-    """
-    Elimina un cliente únicamente si no posee reservas activas.
-    """
+    if dui_formateado not in clientes:
+        return False, "El cliente solicitado no existe."
 
-    if dui not in clientes:
-        return False, "Cliente inexistente."
+    nombre_cliente = clientes[dui_formateado]["nombre"]
+    
+    for res in reservas:
+        if res.get("dui_cliente") == dui_formateado or res.get("cliente") == nombre_cliente:
+            return False, "Restricción de Integridad: No puede eliminarse un cliente con transacciones activas."
 
-    nombre_cliente = clientes[dui]["nombre"]
-
-    for reserva in reservas:
-        if reserva["cliente"] == nombre_cliente:
-            return (
-                False,
-                "No puede eliminarse un cliente con reservas registradas."
-            )
-
-    del clientes[dui]
-
+    del clientes[dui_formateado]
     guardar_datos(ARCHIVO_CLIENTES, clientes)
-
-    return True, "Cliente eliminado correctamente."
+    return True, "Cliente dado de baja del sistema exitosamente."

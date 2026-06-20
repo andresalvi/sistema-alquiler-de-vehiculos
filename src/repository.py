@@ -14,14 +14,14 @@ def cargar_datos(archivo: str, tipo: str) -> Union[Dict[str, Any], List[Any]]:
     Implementa manejo de excepciones robusto ante fallas de Entrada/Salida o corrupción del archivo.
     """
     if not os.path.exists(archivo):
-        return {} if tipo == "vehiculos" else []
+        return {} if tipo in ["vehiculos", "clientes"] else []
     try:
         with open(archivo, "r", encoding="utf-8") as f:
             return json.load(f)
     except (json.JSONDecodeError, IOError) as e:
         # Cláusula de contingencia ante fallos de integridad de datos
         print(f"\n[Error de Datos] No se pudo parsear {archivo}: {e}. Estructura vacía inicializada.")
-        return {} if tipo == "vehiculos" else []
+        return {} if tipo in ["vehiculos", "clientes"] else []
 
 def guardar_datos(archivo: str, datos: Union[Dict[str, Any], List[Any]]) -> None:
     """

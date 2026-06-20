@@ -1,9 +1,9 @@
 # models.py
-"""
-Módulo de Modelos de Dominio.
-Contiene los estados inmutables que definen el ciclo de vida de los vehículos.
-"""
+"""Módulo de Modelos de Dominio."""
 
 ESTADO_DISPONIBLE = "Disponible"
 ESTADO_ALQUILADO = "Alquilado"
 ESTADO_MANTENIMIENTO = "En Mantenimiento"
+
+# agregar constantes del sistema para validar inputs en cuanto a los duis
+LONGITUD_DUI = 9
