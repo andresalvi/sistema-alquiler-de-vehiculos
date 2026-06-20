@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src.clientes import (
     inicializar_clientes,
     registrar_cliente,
-    buscar_,cliente,
+    buscar_cliente,
     editar_cliente,
     listar_clientes,
     eliminar_cliente
